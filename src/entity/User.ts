@@ -1,18 +1,22 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
+import { BaseEntity } from "./BaseEntity";
 
-@Entity()
-export class User {
+@Entity({name: "User"})
+export class User extends BaseEntity{ //não usar o import de baseentity do typeorm 
 
-    @PrimaryGeneratedColumn()
-    id: number
+   @Column({type: 'varchar', length: 100})
+   name: string;
 
-    @Column()
-    firstName: string
+   @Column({type: 'varchar', length: 100})
+   photo: string;
 
-    @Column()
-    lastName: string
+   @Column({type: 'varchar', length: 100})
+   email: string;
 
-    @Column()
-    age: number
+   @Column({default: false})
+   isRoot: boolean;
 
+   @Column({type: 'varchar', length: 100})
+   password: string;
+   
 }

@@ -1,27 +1,26 @@
-import { AppDataSource } from "../data-source"
-import { NextFunction, Request, Response } from "express"
-import { User } from "../entity/User"
+import { AppDataSource } from "../data-source";
+import { NextFunction, Request, Response } from "express";
+import { User } from "../entity/User";
 
 export class UserController {
-
-    private userRepository = AppDataSource.getRepository(User)
+    private userRepository = AppDataSource.getRepository(User);
 
     async all(request: Request, response: Response, next: NextFunction) {
-        return this.userRepository.find()
+        return this.userRepository.find();
     }
 
     async one(request: Request, response: Response, next: NextFunction) {
-        const id = parseInt(request.params.id)
-
+        const uid = request.params.uid; // uid é uma string
 
         const user = await this.userRepository.findOne({
-            where: { id }
-        })
+            where: { uid }, // uid tratado como string
+        });
 
         if (!user) {
-            return "unregistered user"
+            return response.status(404).json({ message: "Unregistered user" });
         }
-        return user
+
+        return response.status(200).json(user);
     }
 
     async save(request: Request, response: Response, next: NextFunction) {
@@ -30,24 +29,25 @@ export class UserController {
         const user = Object.assign(new User(), {
             firstName,
             lastName,
-            age
-        })
+            age,
+        });
 
-        return this.userRepository.save(user)
+        const savedUser = await this.userRepository.save(user);
+
+        return response.status(201).json(savedUser);
     }
 
     async remove(request: Request, response: Response, next: NextFunction) {
-        const id = parseInt(request.params.id)
+        const uid = request.params.uid; // uid é uma string
 
-        let userToRemove = await this.userRepository.findOneBy({ id })
+        const userToRemove = await this.userRepository.findOneBy({ uid });
 
         if (!userToRemove) {
-            return "this user not exist"
+            return response.status(404).json({ message: "This user does not exist" });
         }
 
-        await this.userRepository.remove(userToRemove)
+        await this.userRepository.remove(userToRemove);
 
-        return "user has been removed"
+        return response.status(200).json({ message: "User has been removed" });
     }
-
 }

@@ -7,7 +7,7 @@ export const Routes = [{
     action: "all"
 }, {
     method: "get",
-    route: "/users/:id",
+    route: "/users/:uid",
     controller: UserController,
     action: "one"
 }, {
@@ -17,7 +17,7 @@ export const Routes = [{
     action: "save"
 }, {
     method: "delete",
-    route: "/users/:id",
+    route: "/users/:uid",
     controller: UserController,
     action: "remove"
 }]

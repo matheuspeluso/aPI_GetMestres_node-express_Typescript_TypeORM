@@ -3,7 +3,6 @@ import * as bodyParser from "body-parser"
 import { Request, Response } from "express"
 import { Routes } from "./routes"
 import config from "./configuration/config";
-import { createConnection } from "net";
 import { AppDataSource } from "./data-source";
 
 // create express app
