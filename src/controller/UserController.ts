@@ -1,53 +1,21 @@
-import { AppDataSource } from "../data-source";
-import { NextFunction, Request, Response } from "express";
+import { Request } from "express";
 import { User } from "../entity/User";
+import { BaseController } from "./BaseController";
 
-export class UserController {
-    private userRepository = AppDataSource.getRepository(User);
+export class UserController extends BaseController<User> {
 
-    async all(request: Request, response: Response, next: NextFunction) {
-        return this.userRepository.find();
+    constructor() {
+        super(User);
     }
 
-    async one(request: Request, response: Response, next: NextFunction) {
-        const uid = request.params.uid; // uid é uma string
+    async save(request: Request) { //sobrecarga do método save
+       let _user = <User>request.body;
 
-        const user = await this.userRepository.findOne({
-            where: { uid }, // uid tratado como string
-        });
+       super.isRequired(_user.name, 'O nome do usuário é obrigatório');
+       super.isRequired(_user.photo, 'A foto do usuário é obrigatória');
+       super.isRequired(_user.email, 'O e-mail do usuário é obrigatório');
+       super.isRequired(_user.password, 'A senha do usuário é obrigatório');
 
-        if (!user) {
-            return response.status(404).json({ message: "Unregistered user" });
-        }
-
-        return response.status(200).json(user);
-    }
-
-    async save(request: Request, response: Response, next: NextFunction) {
-        const { firstName, lastName, age } = request.body;
-
-        const user = Object.assign(new User(), {
-            firstName,
-            lastName,
-            age,
-        });
-
-        const savedUser = await this.userRepository.save(user);
-
-        return response.status(201).json(savedUser);
-    }
-
-    async remove(request: Request, response: Response, next: NextFunction) {
-        const uid = request.params.uid; // uid é uma string
-
-        const userToRemove = await this.userRepository.findOneBy({ uid });
-
-        if (!userToRemove) {
-            return response.status(404).json({ message: "This user does not exist" });
-        }
-
-        await this.userRepository.remove(userToRemove);
-
-        return response.status(200).json({ message: "User has been removed" });
+       return super.save(_user);
     }
 }
